@@ -1,18 +1,42 @@
-import { Component } from '@angular/core';
-
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { Geolocation } from 'ionic-native';
+
+declare var google;
 
 @Component({
   selector: 'page-map',
   templateUrl: 'map.html'
 })
 export class MapPage {
-  title: string = 'My first angular2-google-maps project';
-  lat: number = 51.678418;
-  lng: number = 7.809007;
+
+  @ViewChild('map') mapElement: ElementRef;
+  map: any;
 
   constructor(public navCtrl: NavController) {
 
   }
 
+  ionViewDidLoad(){
+    this.loadMap();
+  }
+
+  loadMap(){
+    //TODO loading screen while waiting for latLng
+    Geolocation.getCurrentPosition().then((position) => {
+
+      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+      let mapOptions = {
+        center: latLng,
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+
+      this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
+
+    }, (err) => {
+      console.log(err);
+    });
+  }
 }
