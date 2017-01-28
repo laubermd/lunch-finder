@@ -12,6 +12,7 @@ export class MapPage {
 
   @ViewChild('map') mapElement: ElementRef;
   map: any;
+  loaded = false;
 
   constructor(public navCtrl: NavController) {
 
@@ -25,6 +26,7 @@ export class MapPage {
     //TODO loading screen while waiting for latLng
     Geolocation.getCurrentPosition().then((position) => {
 
+      this.loaded = true;
       let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
       let mapOptions = {
