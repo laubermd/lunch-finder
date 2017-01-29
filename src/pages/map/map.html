@@ -5,6 +5,6 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-spinner [hidden]="loaded" id="spinner"></ion-spinner>
+  <ion-spinner *ngIf="!loaded" id="spinner"></ion-spinner>
   <div #map id="map"></div>
 </ion-content>

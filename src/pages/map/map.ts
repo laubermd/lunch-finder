@@ -12,10 +12,11 @@ export class MapPage {
 
   @ViewChild('map') mapElement: ElementRef;
   map: any;
+  infowindow: any;
   loaded = false;
 
   constructor(public navCtrl: NavController) {
-
+    this.infowindow = new google.maps.InfoWindow();
   }
 
   ionViewDidLoad(){
@@ -24,7 +25,6 @@ export class MapPage {
 
   loadMap(){
     Geolocation.getCurrentPosition().then((position) => {
-
       this.loaded = true;
       let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
@@ -35,7 +35,6 @@ export class MapPage {
       }
 
       this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
-
       let service = new google.maps.places.PlacesService(this.map);
       // TODO move radius to Settings
       service.nearbySearch({
@@ -50,16 +49,21 @@ export class MapPage {
 
   createMarker(place){
     let placeLoc = place.geometry.location;
+    let infowindow = this.infowindow;
     let marker = new google.maps.Marker({
       map: this.map,
       position: place.geometry.location
     });
 
-    // TODO display popup info / make click interactive
     google.maps.event.addListener(marker, 'click', function() {
-      console.log("place",place);
-      //infowindow.setContent(place.name);
-      //infowindow.open(this.map, this);
+      let openNow = place.opening_hours ? place.opening_hours.open_now : undefined;
+      // TODO make window prettier
+      // FIXME use *ngIf, and find out why it didn't work in infowindow.content
+      infowindow.setContent("<div>name: " + place.name + "</div>" +
+                            (place.rating ? "<div>rating: " + place.rating + "</div>" : "") +
+                            (place.price_level ? "<div>price: " + place.price_level + "</div>" : "") +
+                            (place.opening_hours ? "<div>open: " + openNow + "</div>" : ""));
+      infowindow.open(this.map, this);
     });
   }
 
